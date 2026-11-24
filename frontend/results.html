@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Election Results | Rollcall</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f1f5f9;
+      font-family: Arial, sans-serif;
+      color: #1e293b;
+      margin-top: 54px;
+    }
+
+    .results-page {
+      max-width: 1150px;
+      margin: 35px auto;
+      padding: 20px;
+    }
+
+    /* HEADER */
+    .topnav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: #f1f5f9;
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--paper-200);
+}
+
+.topnav-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.28rem;
+    letter-spacing: -0.01em;
+}
+
+.brand.mark {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--seal-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    /* font-weight: 700; */
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.28rem;
+}
+
+.nav-link {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink-700);
+    transition: background .15s ease, color .15s ease;
+}
+
+.nav-link:hover {
+    background: var(--paper-200);
+}
+
+.nav-link.active {
+    background: var(--ink-900);
+    color: var(--text-on-ink);
+}
+
+.nav-user {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    padding: 6px;
+}
+
+.nav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--ink-900);
+    margin: 5px 0;
+}
+
+a {
+    color: inherit;
+}
+    /* ELECTION HEADER */
+
+    .election-header {
+      background: linear-gradient(120deg, #172554, #2563eb);
+      color: white;
+      padding: 32px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+    }
+
+    .election-header h1 {
+      font-size: 29px;
+      margin: 0 0 12px;
+    }
+
+    .election-header p {
+      color: #dbeafe;
+      margin: 9px 0;
+      line-height: 1.5;
+    }
+
+    .status {
+      display: inline-block;
+      background: #dcfce7;
+      color: #166534;
+      padding: 6px 13px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    /* SECTION HEADINGS */
+
+    .section-title {
+      font-size: 21px;
+      margin: 30px 0 17px;
+      color: #172554;
+    }
+
+    /* INFORMATION CARDS */
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .info-card,
+    .stat-card {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-card h3,
+    .stat-card h3 {
+      font-size: 14px;
+      color: #64748b;
+      margin: 0 0 13px;
+    }
+
+    .info-card p {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .stat-card h2 {
+      font-size: 28px;
+      color: #1d4ed8;
+      margin: 0;
+    }
+
+    /* CANDIDATE RESULTS */
+
+    #candidate-results {
+      display: flex;
+      flex-direction: column;
+      gap: 17px;
+    }
+
+    .candidate-row {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .candidate-row h3 {
+      margin: 0 0 10px;
+      color: #172554;
+    }
+
+    .candidate-row p {
+      color: #64748b;
+      margin: 8px 0;
+    }
+
+    .progress-bg {
+      width: 100%;
+      height: 11px;
+      background: #e2e8f0;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #2563eb;
+      border-radius: 20px;
+    }
+
+    /* WINNER */
+
+    .winner-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      border-left: 5px solid #16a34a;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .winner-card h3 {
+      color: #15803d;
+      font-size: 21px;
+      margin-top: 0;
+    }
+
+    .winner-card p {
+      color: #475569;
+    }
+
+    /* BUTTONS */
+
+    .back-btn {
+      display: inline-block;
+      background: #1e3a8a;
+      color: white;
+      text-decoration: none;
+      padding: 12px 23px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+
+    .back-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .empty-message {
+      background: white;
+      padding: 22px;
+      border-radius: 10px;
+      color: #64748b;
+    }
+
+    
+.candidate-result-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 15px;
+    align-items: center;
+    padding: 18px;
+    margin-bottom: 12px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.candidate-name {
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.candidate-votes {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.candidate-percentage {
+    font-weight: bold;
+    color: #16a34a;
+    text-align: right;
+}
+
+.winner-card {
+    padding: 25px;
+    border-radius: 12px;
+    background: #eaf2ff;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .candidate-result-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}
+
+    /* RESPONSIVE */
+
+    @media(max-width: 850px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media(max-width: 550px) {
+      .results-page {
+        padding: 14px;
+      }
+
+      .election-header {
+        padding: 22px;
+      }
+
+      .election-header h1 {
+        font-size: 23px;
+      }
+
+      .info-grid,
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        gap: 10px;
+      }
+
+      .nav-links a {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVIGATION -->
+
+  <header class="results-navbar">
+
+    <nav class="topnav">
+      <div class="topnav-inner">
+        <div class="brand"><span class="mark">R</span>Rollcall</div>
+        <div class="nav-links" id="navLinks">
+          <a href="index.html">
+            <button class="nav-link" data-nav="landing">Home</button>
+          </a>
+          <span class="nav-user" id="navUser"></span>
+          <a href="auth.html">
+            <button class="btn btn-dark btn-sm" id="navAuthBtn">Sign in</button>
+          </a>
+    
+        </div>
+        <button class="nav-hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      </div>
+    </nav>
+
+  </header>
+
+  <main class="results-page">
+
+    <!-- ELECTION DETAILS -->
+
+    <section class="election-header">
+
+      <h1 id="election-title">
+        Loading Election...
+      </h1>
+
+      <p id="election-description">
+        Loading election description...
+      </p>
+
+      <p>
+        Election ID:
+        <strong id="election-id">--</strong>
+      </p>
+
+      <p>
+        Status:
+        <span class="status" id="election-status">
+          Loading...
+        </span>
+      </p>
+
+    </section>
+
+    <!-- ELECTION INFORMATION -->
+
+    <h2 class="section-title">
+      Election Information
+    </h2>
+
+    <section class="info-grid">
+
+      <div class="info-card">
+        <h3>Opening Time</h3>
+        <p id="open-time">--</p>
+      </div>
+
+      <div class="info-card">
+        <h3>Closing Time</h3>
+        <p id="close-time">--</p>
+      </div>
+
+      <div class="info-card">
+        <h3>Total Registered Voters</h3>
+        <p id="eligible-voters">0</p>
+      </div>
+
+    </section>
+
+    <!-- VOTING STATISTICS -->
+
+    <h2 class="section-title">
+      Voting Statistics
+    </h2>
+
+    <section class="stats-grid">
+
+      <div class="stat-card">
+        <h3>Total Votes Cast</h3>
+        <h2 id="votes-cast">0</h2>
+      </div>
+
+      <div class="stat-card">
+        <h3>Did Not Vote</h3>
+        <h2 id="did-not-vote">0</h2>
+      </div>
+
+      <div class="stat-card">
+        <h3>Voting Percentage</h3>
+        <h2 id="turnout">0%</h2>
+      </div>
+
+      <div class="stat-card">
+        <h3>Total Candidates</h3>
+        <h2 id="total-candidates">0</h2>
+      </div>
+
+    </section>
+
+    <!-- CANDIDATE RESULTS -->
+
+    <h2 class="section-title">
+      Candidate-wise Results
+    </h2>
+
+    <section id="candidate-results">
+
+      <div class="empty-message">
+        Loading candidate results...
+      </div>
+
+    </section>
+
+    <!-- WINNER ANNOUNCEMENT -->
+
+    <h2 class="section-title">
+      Election Winner
+    </h2>
+
+    <section class="winner-card" id="winner-container">
+
+      <h3 id="winner-name">
+        Results Pending
+      </h3>
+
+      <p id="winner-votes">
+        Winner will be announced after the election closes.
+      </p>
+
+    </section>
+
+    <!-- BACK BUTTON -->
+
+    <a href="index.html" class="back-btn">
+      ← Back
+    </a>
+
+  </main>
+
+  <!-- JAVASCRIPT -->
+  <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+  <script src="script.js" defer></script>
+
+</body>
+
+</html>

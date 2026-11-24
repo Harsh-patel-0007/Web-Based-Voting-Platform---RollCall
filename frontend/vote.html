@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vote with a code — Rollcall</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,800;1,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f0e6;
+      --ink: #151c33;
+      --muted: #5b6478;
+      --red: #a82a2a;
+      --line: #e3dccb;
+      --card: #fff;
+      --gold: #c9a24b
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, system-ui, sans-serif;
+      line-height: 1.6
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--red);
+      outline-offset: 2px
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px
+    }
+
+    header {
+      border-bottom: 1px solid var(--line)
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px
+    }
+
+    .logo {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 800;
+      font-size: 22px
+    }
+
+    .links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      font-weight: 500
+    }
+
+    .links a:hover,
+    .links a.on {
+      color: var(--red)
+    }
+
+    .btn {
+      display: inline-block;
+      border: 0;
+      cursor: pointer;
+      font: 600 16px Inter, sans-serif;
+      padding: 13px 26px;
+      border-radius: 999px;
+      background: var(--red);
+      color: #fff
+    }
+
+    .btn.dark {
+      background: var(--ink);
+      padding: 10px 20px;
+      font-size: 15px;
+      color: #fff
+    }
+
+    .btn.ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1.5px solid var(--ink)
+    }
+
+    .burger {
+      display: none;
+      background: none;
+      border: 1.5px solid var(--ink);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font: 600 14px Inter;
+      color: var(--ink);
+      cursor: pointer
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 64px;
+      padding: 72px 0 56px;
+      align-items: start
+    }
+
+    .kicker {
+      color: var(--red);
+      font: 500 13px 'JetBrains Mono', monospace;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px
+    }
+
+    .kicker:before {
+      content: "";
+      width: 24px;
+      height: 2px;
+      background: var(--red)
+    }
+
+    h1 {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 800;
+      font-size: clamp(36px, 5vw, 60px);
+      line-height: 1.08;
+      letter-spacing: -.02em
+    }
+
+    h1 em {
+      color: var(--red)
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: 18px;
+      margin-top: 20px;
+      max-width: 52ch
+    }
+
+    .ticket {
+      background: var(--ink);
+      color: #fff;
+      border-radius: 20px;
+      padding: 28px;
+      position: relative
+    }
+
+    .ticket h2 {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 26px;
+      margin-bottom: 4px
+    }
+
+    .ticket p.sub {
+      color: #b9c0d4;
+      font-size: 15px;
+      margin-bottom: 22px
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 6px
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1.5px solid transparent;
+      font: 16px Inter, sans-serif;
+      background: #fff;
+      color: var(--ink)
+    }
+
+    input:focus {
+      outline: 3px solid var(--gold)
+    }
+
+    .field {
+      margin-bottom: 18px
+    }
+
+    .hint {
+      color: #9aa3bb;
+      font-size: 13px;
+      margin-top: 6px
+    }
+
+    .ticket .btn {
+      width: 100%;
+      margin-top: 6px
+    }
+
+    .info {
+      padding: 24px 0 80px
+    }
+
+    h2.sec {
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(26px, 3.5vw, 36px);
+      margin-bottom: 8px
+    }
+
+    .sub2 {
+      color: var(--muted);
+      margin-bottom: 32px;
+      max-width: 60ch
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px
+    }
+
+    .box {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px
+    }
+
+    .box h3 {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 20px;
+      margin-bottom: 8px
+    }
+
+    .box p {
+      color: var(--muted);
+      font-size: 15px
+    }
+
+    .rules {
+      margin-top: 32px;
+      border-left: 4px solid var(--red);
+      padding: 4px 0 4px 20px
+    }
+
+    .rules li {
+      margin: 6px 0 6px 18px;
+      color: var(--muted)
+    }
+
+    .rules strong {
+      color: var(--ink)
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 24px 0;
+      color: var(--muted);
+      font-size: 14px
+    }
+
+    .result-instruction {
+      max-width: 750px;
+      margin: 40px auto;
+      padding: 30px;
+      background: #ffffff;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border-top: 5px solid #2563eb;
+    }
+
+    .notice-icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+
+    .result-instruction h2 {
+      color: #1e3a8a;
+      margin-bottom: 15px;
+    }
+
+    .result-instruction p {
+      color: #555;
+      line-height: 1.7;
+    }
+
+    .notice-highlight {
+      background: #fff7e6;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      color: #92400e;
+    }
+
+    .ballot-btn {
+      display: inline-block;
+      padding: 12px 28px;
+      background: #2563eb;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .ballot-btn:hover {
+      background: #1e40af;
+    }
+
+    html{
+      scroll-behavior: smooth;
+    }
+
+    #result-access {
+      scroll-margin-top: 30px;
+    }
+
+    @media(max-width:900px) {
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding-top: 48px
+      }
+
+      .grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media(max-width:720px) {
+      .burger {
+        display: block
+      }
+
+      .links {
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 72px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--line);
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px 24px 24px;
+        gap: 16px;
+        z-index: 5
+      }
+
+      .links.open {
+        display: flex
+      }
+
+      header {
+        position: relative
+      }
+    }
+  </style>
+  <script src="http://localhost:5000/socket.io/socket.io.js" defer></script>
+
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+  <header>
+    <div class="wrap nav">
+      <a class="logo" href="index.html">R&nbsp; Rollcall</a>
+      <button class="burger" id="burger" aria-expanded="false" aria-controls="links">Menu</button>
+      <nav class="links" id="links">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a class="on" href="vote.html">Vote with a code</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <p class="kicker">Voting booth</p>
+        <h1>One voter, one <em>vote</em>, one election.</h1>
+        <p class="lead">Enter the email address your organiser has on the electoral roll and the election ID they sent
+          you. If you are on the roll and voting is open, you will see your ballot.</p>
+        <p class="lead" style="margin-top:14px">Results stay hidden while voting is open. Once the voting window closes,
+          the winner and the full count are published on the <a href="#result-access" style="
+       color: #7a0c0c;
+       font-weight: 800;
+       text-decoration: none;
+       background: #f1f3f8;
+       padding: 3px 9px;
+       border-radius: 5px;
+   ">results page.</a></p>
+      </div>
+
+      <div class="ticket">
+        <h2>Get your ballot</h2>
+        <p class="sub">Both details are required to open the election.</p>
+        <form action="#" method="post">
+          <div class="field">
+            <label for="email">Email on the electoral roll</label>
+            <input id="Voter_email" name="email" type="email" placeholder="you@example.com" autocomplete="email"
+              required>
+            <p class="hint">Use the same address your organiser uploaded.</p>
+          </div>
+          <div class="field">
+            <label for="eid">Election ID</label>
+            <input id="eid" name="election_id" type="text" placeholder="e.g. 389B6C59" autocomplete="off" required>
+            <p class="hint">Find it in your invitation email.</p>
+          </div>
+          <button class="btn" id="ballot_btn" type="submit">Open my ballot</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="info">
+      <h2 class="sec">Before you vote</h2>
+      <p class="sub2">Four things every voter should know about how a Rollcall election works.</p>
+      <div class="grid">
+        <div class="box">
+          <h3>You vote once</h3>
+          <p>Your email is checked against the roll. After you submit your ballot, the code cannot be used again.</p>
+        </div>
+        <div class="box">
+          <h3>Voting has a window</h3>
+          <p>Ballots are accepted only between the start and end time set by the organiser. Outside that window, the
+            form will not open.</p>
+        </div>
+        <div class="box">
+          <h3>Results come after</h3>
+          <p>No running totals are shown while voting is open. The count is published once the window closes.</p>
+        </div>
+      </div>
+      <ul class="rules">
+        <li><strong>Not on the roll?</strong> Contact the election organiser to be added.</li>
+        <li><strong>Wrong email or ID?</strong> The form will tell you which one did not match.</li>
+        <li><strong>Final choice:</strong> A submitted vote cannot be changed or withdrawn.</li>
+      </ul>
+    </section>
+
+    <section class="result-instruction" id="result-access">
+
+      <div class="notice-icon">📢</div>
+
+      <h2>Election Results Access</h2>
+
+      <p>
+        To view the results of this election, you must first
+        enter the ballot section.
+      </p>
+
+      <p>
+        Please proceed to the ballot page to access the election.
+        Once you have entered the ballot, you can visit the
+        Results section to view the election outcome.
+      </p>
+
+      <div class="notice-highlight">
+        <strong>Important:</strong>
+        Accessing the ballot is a necessary step before
+        proceeding to the election results.
+      </div>
+
+      <!-- <a href="ballot.html" class="ballot-btn">
+        Enter Ballot
+      </a> -->
+
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap mono">Rollcall — Only the names on your roll get a ballot.</div>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      var links = document.getElementById('links'), b = document.getElementById('burger');
+      var open = links.classList.toggle('open');
+      b.setAttribute('aria-expanded', open);
+    }
+    document.getElementById('burger').addEventListener('click', toggleMenu);
+  </script>
+
+</body>
+
+</html>

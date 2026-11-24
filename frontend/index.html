@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rollcall — Run an election your electoral roll can trust</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+        <script src="http://localhost:5000/socket.io/socket.io.js" defer></script>
+    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <nav class="topnav">
+    <div class="topnav-inner">
+        <div class="brand"><span class="mark">R</span>Rollcall</div>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">
+                <button class="nav-link" data-nav="landing" >Home</button>
+            </a>
+            <a href="dashboard.html">
+                <button class="nav-link" id="dashboard" >Dashboard</button>
+            </a>
+            <a href="vote.html">
+            <button class="nav-link" data-nav="vote-entry">Vote with a code</button>
+            </a>
+            <span class="nav-user" id="navUser"></span>
+            <a href="auth.html">
+                <button class="btn btn-dark btn-sm" id="navAuthBtn">Sign in</button>
+            </a>
+            
+        </div>
+        <button class="nav-hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+    </nav>
+
+    <!-- ================= LANDING ================= -->
+    <section class="view" data-view="landing" id="view-landing">
+        <div class="wrap">
+            <div class="hero">
+                <div>
+                    <div class="eyebrow">Elections, run on your own roll</div>
+                    <h1 class="headline">Only the names on your <em>roll</em> get a ballot.</h1>
+                    <p class="sub">Upload your electoral roll as a spreadsheet, open voting for a fixed window, and let
+                        Rollcall check every voter against it automatically. When time's up, the winner is on record — no
+                        recount required.</p>
+                    <div class="hero-ctas">
+                            <button class="btn btn-primary" id="createElectionBtn" >Create an election</button>
+                            <a href="vote.html">
+                                <button class="btn btn-ghost" data-nav="vote-entry">I have a voting code</button>
+                            </a>
+                    </div>
+                    <div class="hero-note">No credit card. Works with .xlsx.</div>
+                </div>
+                <div class="ballot-art">
+                    <div class="ballot-stamp">VERIFIED</div>
+                    <div class="ballot-card">
+                        <div class="ballot-row checked"><span>Amara Osei</span><span class="fill"></span></div>
+                        <div class="ballot-row"><span>Deven Rao</span><span class="fill"></span></div>
+                        <div class="ballot-row"><span>Lin Marchetti</span><span class="fill"></span></div>
+                    </div>
+                    <div class="ink-caption">electoral_roll_2026.xlsx — 1,204 eligible voters matched</div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="section">
+            <div class="wrap">
+                <div class="section-head">
+                    <h2>How an election moves through Rollcall</h2>
+                    <p>Three steps, in order — because that's the actual sequence every election follows here.</p>
+                </div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="num">01 — Set up</div>
+                        <h3>Create the election</h3>
+                        <p>Name it, add candidates, set an opening and closing time, and upload the electoral roll as an
+                            Excel or CSV file.</p>
+                    </div>
+                    <div class="step">
+                        <div class="num">02 — Vote</div>
+                        <h3>Voters check in and cast a ballot</h3>
+                        <p>A voter enters their voter ID or email. Rollcall matches it against the roll — only listed voters
+                            can proceed, and only once.</p>
+                    </div>
+                    <div class="step">
+                        <div class="num">03 — Declare</div>
+                        <h3>Winner goes out automatically</h3>
+                        <p>The moment the window closes, results lock in and a notification is sent to the winner's email
+                            address from the roll.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="section" style="padding-top:0;">
+            <div class="wrap">
+                <div class="split-cta">
+                    <div class="split-card dark">
+                        <h3>Running an election</h3>
+                        <p>Set up eligibility, timing, and candidates in a few minutes.</p>
+                            <!-- <button class="btn btn-primary" 
+                            id="createElectionBtn">Get started</button> -->
+                    </div>
+                    <div class="split-card">
+                        <h3>Casting a vote</h3>
+                        <p>Have a voting code from your organizer? Check your eligibility and vote.</p>
+                        <a href="vote.html">
+                            <button class="btn btn-ghost" data-nav="vote-entry">Enter voting code</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <footer class="site-footer">
+            <div class="wrap" style="display:flex;justify-content:space-between;width:100%;flex-wrap:wrap;gap:8px;">
+                <span>Rollcall — prototype build</span>
+                <span>Frontend demo · no data leaves your browser</span>
+            </div>
+        </footer>
+    </section>
+</body>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rollcall — Run an election your electoral roll can trust</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+     <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <nav class="topnav">
+        <div class="topnav-inner">
+            <div class="brand"><span class="mark">R</span>Rollcall</div>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html">
+                    <button class="nav-link" data-nav="landing" >Home</button>
+                </a>
+                <a href="dashboard.html">
+                    <button class="nav-link" data-nav="dashboard">Dashboard</button>
+                </a>
+                <a href="vote.html">
+                    <button class="nav-link" data-nav="vote-entry">Vote with a code</button>
+                </a>
+                <span class="nav-user" id="navUser"></span>
+                <button class="btn btn-dark btn-sm" id="logout">logout</button>
+            </div>
+            <button class="nav-hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+
+    <!-- ================= CREATE ELECTION ================= -->
+    <section  data-view="create" id="view-create">
+        <div class="wrap1">
+            <div class="dash-head">
+                <div>
+                    <h2>Create an election</h2>
+                    <p>Set the basics, add candidates, and upload your electoral roll.</p>
+                </div>
+            </div>
+            <div class="form-shell">
+                <form id="electionForm">
+                    <div class="card-panel">
+                        <h3>Election details</h3>
+                        <p class="panel-sub">What voters will see when they open their ballot.</p>
+                        <div class="field">
+                            <label for="elTitle">Election title</label>
+                            <input type="text" id="elTitle" placeholder="e.g. Residents' Association Chairperson 2026"
+                                required>
+                        </div>
+                        <div class="field">
+                            <label for="elDesc">Description</label>
+                            <textarea id="elDesc" rows="3"
+                                placeholder="A short note voters will see, e.g. what this election decides."></textarea>
+                        </div>
+                        <div class="row-2">
+                            <div class="field">
+                                <label for="elStart">Opens</label>
+                                <input type="datetime-local" id="elStart" required>
+                            </div>
+                            <div class="field">
+                                <label for="elEnd">Closes</label>
+                                <input type="datetime-local" id="elEnd" required>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="card-panel">
+                        <h3>Candidates</h3>
+                        <p class="panel-sub">Add at least two names. Voters choose one.</p>
+                        <div class="candidate-list" id="candidateList">
+                    
+                                <div class="candidate-add">
+                                    <input type="text" class="Candidate-name" name="Candidate name">
+                                    <button type="button" onclick="removeField(this)">Remove</button>
+                                </div>
+                           
+                            </div>
+                            <button type="button" class="btn btn-dark btn-sm" id="addCandidateBtn" onclick = "addField()">Add</button>
+                    </div>
+    
+                    <div class="card-panel">
+                        <h3>Electoral roll</h3>
+                        <p class="panel-sub">Upload a spreadsheet with the people eligible to vote. Include columns for
+                            name, email, and voter ID — Rollcall detects them automatically.</p>
+                        <div class="dropzone" id="dropzone">
+                            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#a8322d" stroke-width="1.6"
+                                style="margin:0 auto 12px;">
+                                <path d="M12 3v12m0-12 4 4m-4-4-4 4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                            </svg>
+                            <div class="dz-title">Drop your .xlsx or .csv roll here</div>
+                            <div class="dz-sub">or click to browse — expects a header row with name / email / voter ID</div>
+                            <input type="file" id="rollFile" accept=".xlsx,.xls,.csv">
+                        </div>
+                        <div id="rollFeedback"></div>
+                        <div id="rollPreviewWrap"></div>
+                    </div>
+    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-ghost" data-nav="dashboard" onclick="window.location.href='./index.html'">Cancel</button>
+                        <button type="submit" id="create_election" class="btn btn-primary">Create election</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+
+</body>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in or register — Rollcall</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <!-- Auth styles are self-contained so this page works on its own. Move them into style.css if you prefer. -->
+    <style>
+        :root {
+            --paper: #f4f3ee;
+            --card: #fffffd;
+            --ink: #14213d;
+            --ink-soft: #4a5470;
+            --rule: #cfd2c7;
+            --stamp: #b3261e;
+            --ok: #1f6b4a;
+            --focus: #2f5bd8;
+            --serif: 'Fraunces', Georgia, serif;
+            --sans: 'IBM Plex Sans', system-ui, sans-serif;
+            --mono: 'IBM Plex Mono', ui-monospace, monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { height: 100%; }
+        body {
+            min-height: 100%;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: var(--sans);
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { color: inherit; }
+        button, input, select { font: inherit; color: inherit; }
+        :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+        /* ---------- nav ---------- */
+        .topnav { border-bottom: 1px solid var(--rule); background: var(--paper); }
+        .topnav-inner {
+            max-width: 1120px; margin: 0 auto; padding: 14px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .brand {
+            font-family: var(--serif); font-weight: 700; font-size: 1.3rem;
+            display: flex; align-items: center; gap: 10px; text-decoration: none;
+        }
+        .brand .mark {
+            width: 30px; height: 30px; display: grid; place-items: center;
+            background: var(--ink); color: var(--paper); border-radius: 4px;
+            font-size: 1rem; font-weight: 900;
+        }
+        .nav-links { display: flex; align-items: center; gap: 4px; }
+        .nav-links a {
+            text-decoration: none; padding: 8px 12px; border-radius: 6px;
+            font-weight: 500; font-size: .95rem; color: var(--ink-soft);
+        }
+        .nav-links a:hover { color: var(--ink); background: rgba(20, 33, 61, .06); }
+        .nav-links a[aria-current="page"] { color: var(--ink); }
+
+        /* ---------- layout ---------- */
+        main {
+            max-width: 1120px; margin: 0 auto; padding: 56px 24px 72px;
+            display: grid; grid-template-columns: minmax(0, 480px) minmax(0, 1fr);
+            gap: 72px; align-items: start;
+        }
+
+        /* ---------- form panel ---------- */
+        .panel h1 {
+            font-family: var(--serif); font-weight: 700; font-size: clamp(2rem, 4vw, 2.6rem);
+            line-height: 1.1; letter-spacing: -.01em; margin-bottom: 10px;
+        }
+        .panel .lede { color: var(--ink-soft); margin-bottom: 28px; max-width: 42ch; }
+
+        .tabs {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+            border: 1.5px solid var(--ink); border-radius: 8px; overflow: hidden; margin-bottom: 28px;
+        }
+        .tab {
+            background: transparent; border: 0; padding: 12px 16px; cursor: pointer;
+            font-weight: 600; font-size: .95rem; color: var(--ink);
+            transition: background .15s, color .15s;
+        }
+        .tab + .tab { border-left: 1.5px solid var(--ink); }
+        .tab[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+        .tab:not([aria-selected="true"]):hover { background: rgba(20, 33, 61, .07); }
+
+        form[hidden] { display: none; }
+        .field { margin-bottom: 18px; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        label, .label-row { font-weight: 600; font-size: .9rem; display: block; margin-bottom: 6px; }
+        .label-row { display: flex; justify-content: space-between; align-items: baseline; }
+        .label-row a { font-weight: 500; font-size: .85rem; color: var(--ink-soft); }
+        .hint { font-size: .82rem; color: var(--ink-soft); margin-top: 6px; }
+
+        .input-wrap { position: relative; }
+        input[type=text], input[type=email], input[type=password], select {
+            width: 100%; padding: 12px 14px; background: var(--card);
+            border: 1.5px solid var(--rule); border-radius: 6px; font-size: 1rem;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        input:hover, select:hover { border-color: #aeb2a5; }
+        input:focus, select:focus {
+            outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(47, 91, 216, .25);
+        }
+        .field.invalid input, .field.invalid select { border-color: var(--stamp); }
+        .error { color: var(--stamp); font-size: .85rem; margin-top: 6px; display: none; font-weight: 500; }
+        .field.invalid .error { display: block; }
+
+        .reveal {
+            position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+            background: none; border: 0; padding: 6px 10px; cursor: pointer;
+            font-size: .85rem; font-weight: 600; color: var(--ink-soft); border-radius: 4px;
+        }
+        .reveal:hover { color: var(--ink); background: rgba(20, 33, 61, .06); }
+        .input-wrap input[type=password], .input-wrap input.has-reveal { padding-right: 68px; }
+
+        .strength { display: flex; gap: 4px; margin-top: 8px; }
+        .strength span { flex: 1; height: 4px; background: var(--rule); border-radius: 2px; transition: background .2s; }
+        .strength[data-level="1"] span:nth-child(-n+1) { background: var(--stamp); }
+        .strength[data-level="2"] span:nth-child(-n+2) { background: #c77a12; }
+        .strength[data-level="3"] span:nth-child(-n+3) { background: #7a9a2a; }
+        .strength[data-level="4"] span { background: var(--ok); }
+
+        .check { display: flex; gap: 10px; align-items: flex-start; font-size: .92rem; margin-bottom: 20px; }
+        .check input { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--ink); flex: none; }
+        .check label { font-weight: 400; margin: 0; }
+        .check a { text-decoration-thickness: 1px; text-underline-offset: 3px; }
+
+        .btn {
+            width: 100%; padding: 14px 20px; border: 0; border-radius: 6px; cursor: pointer;
+            background: var(--ink); color: var(--paper); font-weight: 600; font-size: 1rem;
+            transition: transform .1s, background .15s;
+        }
+        .btn:hover { background: #0c1630; }
+        .btn:active { transform: translateY(1px); }
+        .btn[disabled] { opacity: .6; cursor: progress; }
+
+        .alert {
+            padding: 12px 14px; border-radius: 6px; font-size: .92rem; margin-bottom: 18px;
+            border: 1.5px solid var(--stamp); background: #fbeceb; color: #7d1a15; display: none;
+        }
+        .alert.show { display: block; }
+        .alert.success { border-color: var(--ok); background: #e8f3ed; color: #144a33; }
+
+        .switch { margin-top: 22px; font-size: .92rem; color: var(--ink-soft); }
+        .switch button {
+            background: none; border: 0; padding: 0; cursor: pointer; font-weight: 600;
+            color: var(--ink); text-decoration: underline; text-underline-offset: 3px;
+        }
+        .voter-note {
+            margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--rule);
+            font-size: .92rem; color: var(--ink-soft);
+        }
+
+        /* ---------- ballot art ---------- */
+        .ballot-art { position: sticky; top: 40px; padding: 20px 0 0 20px; }
+        .ballot-card {
+            background: var(--card); border: 1.5px solid var(--ink); border-radius: 6px;
+            padding: 28px 28px 20px; transform: rotate(1.5deg);
+            box-shadow: 6px 6px 0 var(--ink);
+        }
+        .ballot-title {
+            font-family: var(--serif); font-weight: 700; font-size: 1.25rem;
+            padding-bottom: 14px; margin-bottom: 8px; border-bottom: 1.5px dashed var(--rule);
+        }
+        .ballot-sub { font-size: .85rem; color: var(--ink-soft); margin-bottom: 14px; }
+        .ballot-row {
+            display: flex; align-items: center; gap: 14px; padding: 14px 0;
+            border-bottom: 1px solid var(--rule); font-weight: 500;
+        }
+        .ballot-row:last-of-type { border-bottom: 0; }
+        .ballot-row .box {
+            width: 22px; height: 22px; border: 1.5px solid var(--ink); border-radius: 4px;
+            display: grid; place-items: center; flex: none;
+        }
+        .ballot-row.checked .box { background: var(--ink); }
+        .ballot-row.checked .box::after {
+            content: ''; width: 10px; height: 5px; border-left: 2.5px solid var(--paper);
+            border-bottom: 2.5px solid var(--paper); transform: rotate(-45deg) translate(1px, -1px);
+        }
+        .ballot-row .fill { flex: 1; height: 1px; border-bottom: 1.5px dotted var(--rule); }
+        .ballot-stamp {
+            position: absolute; right: -14px; top: -6px; z-index: 2;
+            font-family: var(--mono); font-weight: 600; font-size: 1.05rem; letter-spacing: .14em;
+            color: var(--stamp); border: 3px solid var(--stamp); border-radius: 6px;
+            padding: 6px 14px; transform: rotate(-9deg); background: rgba(244, 243, 238, .85);
+            animation: stamp .45s cubic-bezier(.2, 1.4, .4, 1) .3s both;
+        }
+        .ballot-wrap { position: relative; }
+        .ink-caption {
+            font-family: var(--mono); font-size: .8rem; color: var(--ink-soft);
+            margin-top: 34px; padding-left: 4px;
+        }
+        @keyframes stamp {
+            from { opacity: 0; transform: rotate(-9deg) scale(1.8); }
+            to { opacity: 1; transform: rotate(-9deg) scale(1); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .ballot-stamp { animation: none; }
+            * { transition: none !important; }
+        }
+
+        /* ---------- responsive ---------- */
+        @media (max-width: 880px) {
+            main { grid-template-columns: 1fr; gap: 40px; padding-top: 36px; }
+            .ballot-art { display: none; }
+            .nav-links a:not(.keep) { display: none; }
+        }
+        @media (max-width: 460px) {
+            .row { grid-template-columns: 1fr; gap: 0; }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="topnav">
+        <div class="topnav-inner">
+            <a href="index.html" class="brand"><span class="mark">R</span>Rollcall</a>
+            <div class="nav-links">
+                <a href="index.html" class="keep">Home</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="index.html#vote-entry">Vote with a code</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="panel" aria-labelledby="pageTitle">
+            <h1 id="pageTitle">Sign in to your elections</h1>
+            <p class="lede" id="pageLede">Pick up where you left off — your rolls, candidates and results are waiting.</p>
+
+            <div class="tabs" role="tablist" aria-label="Account">
+                <button class="tab" role="tab" id="tab-login" aria-controls="loginForm" aria-selected="true">Sign in</button>
+                <button class="tab" role="tab" id="tab-register" aria-controls="registerForm" aria-selected="false">Create account</button>
+            </div>
+
+            <div class="alert" id="alert" role="alert"></div>
+
+            <!-- LOGIN -->
+            <form id="loginForm" role="tabpanel">
+                <div class="field">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" name="email" required autocomplete="email" placeholder="you@organisation.org">
+                    <div class="error">Enter the email you registered with.</div>
+                </div>
+                <div class="field">
+                    <!-- <div class="label-row"><label for="loginPass" style="margin:0">Password</label><a href="/your-forgot-password-page" id="forgot">Forgot password?</a></div> -->
+                    <div class="input-wrap">
+                        <input type="password" id="loginPass" name="password" required autocomplete="current-password">
+                        <button type="button" class="reveal" data-target="loginPass" aria-label="Show password">Show</button>
+                    </div>
+                    <div class="error">Enter your password.</div>
+                </div>
+                <div class="check">
+                    <input type="checkbox" id="remember" name="remember"><label for="remember">Keep me signed in on this device</label>
+                </div>
+                <button class="btn" type="submit">Sign in</button>
+                <p class="switch">New to Rollcall? <button type="button" data-go="register">Create an account</button></p>
+            </form>
+
+            <!-- REGISTER -->
+            <form id="registerForm" role="tabpanel">
+                <div class="row">
+                    <div class="field">
+                        <label for="regName">Full name</label>
+                        <input type="text" id="regName" name="name" required autocomplete="name" placeholder="Amara Osei">
+                        <div class="error">Enter your name.</div>
+                    </div>
+                    <!-- <div class="field">
+                        <label for="regOrg">Organisation</label>
+                        <input type="text" id="regOrg" name="organisation" autocomplete="organization" placeholder="Class of 2026">
+                        <div class="error">Enter the group you run elections for.</div>
+                    </div> -->
+                </div>
+                <div class="field">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" name="email" required autocomplete="email" placeholder="you@organisation.org">
+                    <div class="error">Enter a valid email address.</div>
+                </div>
+                <div class="field">
+                    <label for="regPass">Password</label>
+                    <div class="input-wrap">
+                        <input type="password" id="regPass" name="password" required minlength="8" autocomplete="new-password" aria-describedby="passHint">
+                        <button type="button" class="reveal" data-target="regPass" aria-label="Show password">Show</button>
+                    </div>
+                    <div class="hint" id="passHint">At least 8 characters. Mix letters, numbers and symbols for a stronger one.</div>
+                    <div class="error">Use at least 8 characters.</div>
+                </div>
+                <div class="field">
+                    <label for="regPass2">Confirm password</label>
+                    <input type="password" id="regPass2" name="confirm_password" required autocomplete="new-password">
+                    <div class="error">The passwords don't match.</div>
+                </div>
+                <div class="field check" style="flex-wrap:wrap;margin-bottom:20px">
+                    <input type="checkbox" id="terms" name="terms" required><label for="terms">I'll only upload rolls I'm authorised to use, and I agree to the <a href="#">terms</a>.</label>
+                    <div class="error" style="width:100%">Tick this box to continue.</div>
+                </div>
+                <button class="btn" type="submit">Create account</button>
+                <p class="switch">Already registered? <button type="button" data-go="login" >Sign in</button></p>
+            </form>
+
+            <p class="voter-note">Only voting? You don't need an account. <a href="index.html#vote-entry">Enter your voting code</a> instead.</p>
+        </section>
+
+        <aside class="ballot-art" aria-hidden="true">
+            <div class="ballot-wrap">
+                <div class="ballot-stamp">VERIFIED</div>
+                <div class="ballot-card">
+                    <div class="ballot-title">Student Council President</div>
+                    <div class="ballot-sub">Voting closes Friday, 5:00 pm</div>
+                    <div class="ballot-row checked"><span class="box"></span><span>Amara Osei</span><span class="fill"></span></div>
+                    <div class="ballot-row"><span class="box"></span><span>Deven Rao</span><span class="fill"></span></div>
+                    <div class="ballot-row"><span class="box"></span><span>Lin Marchetti</span><span class="fill"></span></div>
+                </div>
+            </div>
+            <div class="ink-caption">electoral_roll_2026.xlsx — 1,204 eligible voters matched</div>
+        </aside>
+    </main>
+
+    <script>
+        /* UI-only behaviour: no data is read, stored or sent here. Wire the forms to your backend. */
+        (function () {
+            var $ = function (id) { return document.getElementById(id); };
+            var tabs = { login: $('tab-login'), register: $('tab-register') };
+            var forms = { login: $('loginForm'), register: $('registerForm') };
+            var copy = {
+                login: ['Sign in to your elections', 'Pick up where you left off — your rolls, candidates and results are waiting.'],
+                register: ['Create your organiser account', 'Set up an election in minutes. Upload a roll, add candidates, pick a closing time.']
+            };
+            function show(which) {
+                var other = which === 'login' ? 'register' : 'login';
+                forms[which].hidden = false; forms[other].hidden = true;
+                tabs[which].setAttribute('aria-selected', 'true'); tabs[other].setAttribute('aria-selected', 'false');
+                $('pageTitle').textContent = copy[which][0]; $('pageLede').textContent = copy[which][1];
+                document.title = (which === 'login' ? 'Sign in' : 'Create account') + ' — Rollcall';
+            }
+            tabs.login.onclick = function () { show('login'); };
+            tabs.register.onclick = function () { show('register'); };
+            Array.prototype.forEach.call(document.querySelectorAll('[data-go]'), function (b) {
+                b.onclick = function () { show(b.getAttribute('data-go')); };
+            });
+            show(location.hash === '#register' ? 'register' : 'login');
+
+            Array.prototype.forEach.call(document.querySelectorAll('.reveal'), function (btn) {
+                btn.onclick = function () {
+                    var input = $(btn.getAttribute('data-target')), showing = input.type === 'text';
+                    input.type = showing ? 'password' : 'text';
+                    btn.textContent = showing ? 'Show' : 'Hide';
+                    btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+                };
+            });
+        })();
+        
+    </script>
+    <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+<script src="./script.js"></script>
+</body>
+
+</html>
